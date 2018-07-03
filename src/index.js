@@ -11,7 +11,7 @@ const debug = require('debug')('start-server-and-test')
 const isDebug = () =>
   process.env.DEBUG && process.env.DEBUG.indexOf('start-server-and-test') !== -1
 
-function startAndTest ({ start, url, test }) {
+function startAndTest ({ start, url, test, startArgs, testArgs }) {
   la(is.unemptyString(start), 'missing start script name', start)
   la(is.unemptyString(test), 'missing test script name', test)
   la(
@@ -22,7 +22,7 @@ function startAndTest ({ start, url, test }) {
 
   debug('starting server, verbose mode?', isDebug())
 
-  const server = execa('npm', ['run', start], { stdio: 'inherit' })
+  const server = execa('npm', ['run', start].concat(startArgs || []), { stdio: 'inherit' })
   let serverStopped
 
   function stopServer () {
@@ -67,7 +67,7 @@ function startAndTest ({ start, url, test }) {
 
   function runTests () {
     debug('running test script command', test)
-    return execa('npm', ['run', test], { stdio: 'inherit' })
+    return execa('npm', ['run', test].concat(testArgs || []), { stdio: 'inherit' })
   }
 
   return waited
